@@ -1,0 +1,28 @@
+char znak = " ";
+void setup() {
+ Serial.begin(9600);
+ Serial1.begin(38400);
+ 
+ while(!Serial1);
+ 
+ Serial.println("Hello world!");
+ 
+}
+ 
+ 
+ 
+String input;
+ 
+void loop() {
+ 
+ if(Serial1.available() > 0) {
+
+   znak = Serial1.read();
+   Serial.print(znak);
+   //input = Serial1.readString();
+ 
+   //Serial.println(input);
+ 
+ }
+ 
+}
