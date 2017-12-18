@@ -1,0 +1,96 @@
+#include <AFMotor.h>
+AF_DCMotor Motor1(3);
+AF_DCMotor Motor2(4);
+
+int v=150;
+int v1=100;
+
+char znak = " ";
+void setup() {
+ Serial.begin(9600); //  Serial Monitor
+ Serial1.begin(38400); // Serial Bluetooth
+
+  Motor1.setSpeed(v);
+  Motor2.setSpeed(v);
+  Motor1.run(RELEASE);
+  Motor2.run(RELEASE);
+ 
+ while(!Serial1);
+ 
+ Serial.println("Connected");
+ 
+}
+ 
+ 
+ 
+// String input;
+ 
+void loop() {
+ 
+ if(Serial1.available() > 0) {
+
+   znak = Serial1.read();
+   //Serial.print(znak);
+
+   if(znak=='S')
+   {
+
+    Motor1.run(RELEASE);
+    Motor2.run(RELEASE);
+   //Serial.println("STOP");
+   }
+   if(znak=='F')
+   {
+
+    Motor1.run(FORWARD);
+    Motor2.run(FORWARD);
+   //Serial.println("GAZ");
+   }
+
+     if(znak=='B')
+   {
+
+    Motor1.run(BACKWARD);
+    Motor2.run(BACKWARD);
+   //Serial.println("TYL");
+   }
+
+     if(znak=='L')
+   {
+    Motor1.run(FORWARD);    
+    Motor2.run(BACKWARD);    
+   //Serial.println("LEWO");
+   }
+     if(znak=='R')
+   {
+
+    Motor1.run(BACKWARD);
+    Motor2.run(FORWARD);
+   //Serial.println("PRAWO");
+   }
+     if(znak=='G')
+   {
+
+    Motor1.run(FORWARD);
+    Motor1.setSpeed(v + 20);
+    Motor2.run(FORWARD);
+    Motor1.setSpeed(v - 20);
+   //Serial.println("LEWO PRZOD");
+   }
+
+     if(znak=='I')
+   {
+
+   Motor1.run(FORWARD);
+    Motor1.setSpeed(v - 20);
+    Motor2.run(FORWARD);
+    Motor1.setSpeed(v + 20);
+   //Serial.println("PRAWO PRZOD");
+   }
+   //input = Serial1.readString();
+ 
+   //Serial.println(input);
+ 
+ }
+ 
+}
