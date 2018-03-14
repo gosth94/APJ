@@ -1,0 +1,323 @@
+#include <AFMotor.h>
+AF_DCMotor Motor1(4);
+AF_DCMotor Motor2(3);
+
+//////////////////////////////////////
+#define trigPinF 24
+#define echoPinF 25
+
+#define trigPinL 52
+#define echoPinL 53
+
+#define trigPinR 22
+#define echoPinR 23
+//////////////////////////////////////
+
+bool m_auto = false;
+
+int v=150;
+int v1=40;
+
+char znak;
+
+/////////////////////////////////////////////
+
+int Czujnik_Przod()
+{
+  long duration, distance;
+  digitalWrite(trigPinF, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPinF, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPinF, LOW);
+  duration = pulseIn(echoPinF, HIGH);
+  distance = (duration/2) / 29.1;
+  Serial.print(distance);
+  Serial.println(" cm");
+
+  if(distance < 25)
+  {
+    return 0;
+  }
+  else
+  {
+    return 1;
+  }
+}
+
+int Czujnik_Lewo()
+{
+  long duration, distance;
+  digitalWrite(trigPinL, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPinL, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPinL, LOW);
+  duration = pulseIn(echoPinL, HIGH);
+  distance = (duration/2) / 29.1;
+  Serial.print(distance);
+  Serial.println(" cm lewo");
+
+  if(distance < 25)
+  {
+    return 0;
+  }
+  else
+  {
+    return 1;
+  }
+  
+}
+
+int Czujnik_Prawo()
+{
+  long duration, distance;
+  digitalWrite(trigPinR, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPinR, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPinF, LOW);
+  duration = pulseIn(echoPinR, HIGH);
+  distance = (duration/2) / 29.1;
+  Serial.print(distance);
+  Serial.println(" cm prawo");
+
+  if(distance < 25)
+  {
+    return 0;
+  }
+  else
+  {
+    return 1;
+  }
+}
+
+
+
+
+////////////////////////////////////////////
+void setup() {
+  
+ pinMode(trigPinF, OUTPUT);
+ pinMode(echoPinF, INPUT);
+
+ pinMode(trigPinL, OUTPUT);
+ pinMode(echoPinL, INPUT);
+
+ pinMode(trigPinR, OUTPUT);
+ pinMode(echoPinR, INPUT);
+ pinMode(26, OUTPUT);
+ digitalWrite(26, HIGH);
+ Serial.begin(9600); //  Serial Monitor
+ Serial1.begin(38400); // Serial Bluetooth
+
+  Motor1.setSpeed(v);
+  Motor2.setSpeed(v);
+  Motor1.run(RELEASE);
+  Motor2.run(RELEASE);
+ 
+ while(!Serial1);
+ 
+ Serial.println("Connected");
+ 
+}
+ 
+// String input;
+//______________________________________________Deklaracja Kierunkow_____________________________________________________________
+void Stoj()
+{
+  Motor1.run(RELEASE);
+  Motor2.run(RELEASE);  
+}
+
+void Przod()
+{
+  Motor1.run(FORWARD);
+  Motor2.run(FORWARD);
+}
+
+void Tyl()
+{
+  Motor1.run(BACKWARD);
+  Motor2.run(BACKWARD);
+}
+
+void Prawo()
+{
+  Motor1.run(BACKWARD);
+  Motor2.run(FORWARD); 
+}
+
+void Lewo()
+{
+  Motor1.run(FORWARD);    
+  Motor2.run(BACKWARD);
+}
+
+void Prawy_Przod()
+{
+  Motor2.setSpeed(v - v1);
+  Motor1.setSpeed(v + v1);
+  Motor2.run(FORWARD);
+  Motor1.run(FORWARD);
+}
+
+void Lewy_Przod()
+{
+  
+  Motor1.setSpeed(v - v1);
+  Motor2.setSpeed(v + v1);
+  Motor1.run(FORWARD);
+  Motor2.run(FORWARD);
+}
+
+void Prawy_Tyl()
+{
+  Motor1.setSpeed(v + v1);
+  Motor2.setSpeed(v - v1);
+  Motor1.run(BACKWARD);
+  Motor2.run(BACKWARD);
+  
+}
+
+void Lewy_Tyl()
+{
+  Motor1.setSpeed(v - v1);
+  Motor2.setSpeed(v + v1);
+  Motor1.run(BACKWARD);
+  Motor2.run(BACKWARD);
+  
+}
+//____________________________________________________________GLOWNA PETLA ________________________________________________________________________
+
+void loop() {
+ 
+ if(Serial1.available() > 0) {
+   
+   znak = Serial1.read();
+   //Serial.print(znak);
+
+
+
+   switch (znak)
+   
+   {
+       //_________________________________________________________________TRYB RECZNY________________________________________________________
+       case 'S':
+            Stoj();
+            break;
+       case 'F':
+            Przod();
+            break;
+       case 'B':
+            Tyl();
+            break;
+       case 'R':
+            Prawo();
+            break;
+       case 'L':
+            Lewo();
+            break;
+       case 'G':
+            Lewy_Przod();
+            break;
+       case 'I':
+            Prawy_Przod();
+            break;
+       case 'H':
+            Lewy_Tyl();
+            break;
+       case 'J':
+            Prawy_Tyl();
+            break;
+       case '1':
+            Motor1.setSpeed(120);
+            Motor2.setSpeed(120);
+            break;
+       case '2':
+            Motor1.setSpeed(130);
+            Motor2.setSpeed(130);
+            break;
+       case '3':
+            Motor1.setSpeed(150);
+            Motor2.setSpeed(150);
+            break;
+       case '4':
+            Motor1.setSpeed(160);
+            Motor2.setSpeed(160);
+            break;
+       case '5':
+            Motor1.setSpeed(180);
+            Motor2.setSpeed(180);
+            break;
+       case '6':
+            Motor1.setSpeed(190);
+            Motor2.setSpeed(190);
+            break;
+       case '7':
+            Motor1.setSpeed(200);
+            Motor2.setSpeed(200);
+            break;
+       case '8':
+            Motor1.setSpeed(210);
+            Motor2.setSpeed(210);
+            break;
+       case '9':
+            Motor1.setSpeed(220);
+            Motor2.setSpeed(220);
+            break;
+       case '0':
+            Motor1.setSpeed(100);
+            Motor2.setSpeed(100);
+            break;
+    
+       case 'A':
+            { 
+              if(m_auto==true)
+              {
+                m_auto = false; 
+              }
+              else
+              {
+                m_auto = true;
+              }
+              break;
+            }
+            
+            
+       
+    }
+
+ 
+ }
+//_________________________________________________________________________TRYB AUTO_________________________________________________________________
+  if(m_auto==1)
+  {
+    if(Czujnik_Przod()==1)
+    {
+      Przod();
+    }
+
+    else
+    {
+      if(Czujnik_Prawo()==1)
+      {
+        Prawo();
+      }
+      else if(Czujnik_Lewo()==1)
+      {
+        Lewo();
+      }
+
+      else
+      {
+        Tyl();
+      }
+    }
+    
+  }
+  
+
+ 
+ 
+}
