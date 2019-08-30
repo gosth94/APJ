@@ -1,0 +1,231 @@
+#include <AFMotor.h>
+AF_DCMotor Motor1(3);
+AF_DCMotor Motor2(4);
+
+//_______________CZujnik przod________________________
+#define trigPin 22  
+#define echoPin 23
+//_______________czujnik prawo________________________
+#define trigPinP 24  
+#define echoPinP 25
+//_______________czujnik lewo_________________________
+#define trigPinL 26  
+#define echoPinL 27
+
+int odleglosc,odlegloscP,odlegloscL; 
+
+int v=150;
+char znak = " ";
+
+void setup()
+{
+ Serial.begin(9600); //  Serial Monitor
+ Serial1.begin(38400); // Serial Bluetooth
+
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+
+  pinMode(trigPinP, OUTPUT);
+  pinMode(echoPinP, INPUT);
+
+  pinMode(trigPinL, OUTPUT);
+  pinMode(echoPinL, INPUT);
+  
+  Motor1.setSpeed(v);
+  Motor2.setSpeed(v);
+  Motor1.run(RELEASE);
+  Motor2.run(RELEASE);
+ 
+ while(!Serial1);
+ 
+ Serial.println("Connected"); 
+}
+
+int czujnik()
+{
+  long duration, distance;
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+  duration = pulseIn(echoPin, HIGH);
+  distance = (duration/2) / 29.1;  
+  odleglosc = distance;
+ }
+
+ int czujnikPrawo()
+{
+  long duration, distance;
+  digitalWrite(trigPinP, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPinP, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPinP, LOW);
+  duration = pulseIn(echoPinP, HIGH);
+  distance = (duration/2) / 29.1;  
+  odlegloscP = distance;
+ }
+ int czujnikLewo()
+{
+  long duration, distance;
+  digitalWrite(trigPinL, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPinL, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPinL, LOW);
+  duration = pulseIn(echoPinL, HIGH);
+  distance = (duration/2) / 29.1;  
+  odlegloscL = distance;
+ }
+
+ void Stoj()
+ {
+    Motor1.run(RELEASE);
+    Motor2.run(RELEASE);
+ }
+ void Przod()
+ {
+    Motor1.run(FORWARD);
+    Motor2.run(FORWARD);
+ }
+ void Tyl()
+ {
+    Motor1.run(BACKWARD);
+    Motor2.run(BACKWARD);
+ }
+
+ void Lewo()
+ {
+   Motor1.run(FORWARD);
+   Motor2.run(BACKWARD);
+ }
+ void Prawo()
+ {
+   Motor1.run(BACKWARD);
+   Motor2.run(FORWARD);
+ }
+ void Prawy_Przod()
+ {
+    Motor1.setSpeed(v + 20);
+    Motor1.run(FORWARD);
+    Motor2.setSpeed(v - 20);
+    Motor2.run(FORWARD);
+ }
+  void Lewy_Przod()
+ {
+    Motor1.setSpeed(v - 20);
+    Motor1.run(FORWARD);
+    Motor2.setSpeed(v + 20);
+    Motor2.run(FORWARD);
+ }
+   void Prawy_Tyl()
+ {
+    Motor1.setSpeed(v + 20);
+    Motor1.run(BACKWARD);
+    Motor2.setSpeed(v - 20);
+    Motor2.run(BACKWARD);
+ }
+    void Lewy_Tyl() {
+    Motor1.setSpeed(v - 20);
+    Motor1.run(BACKWARD);
+    Motor2.setSpeed(v + 20);
+    Motor2.run(BACKWARD);
+ }
+ 
+ 
+void loop() {
+  
+ if(Serial1.available() > 0) {
+   
+  czujnik();
+  Serial.println(odleglosc);
+    
+   znak = Serial1.read();
+   //Serial.print(znak);
+
+   if (znak = 'A')
+   {
+     czujnik();
+     if (odleglosc > 30)
+     {
+        Przod();
+     }
+     if (odleglosc <= 30)
+     {
+       
+       Stoj();
+       czujnikPrawo();
+       if(odlegloscP <= 30)
+       {
+         Stoj();
+         czujnikLewo();
+         if(odlegloscL <= 30)
+         {
+           Stoj();
+           Tyl();
+         }
+         if(odlegloscL > 30);
+         {
+            Lewy_Przod();
+         }
+       }
+       if(odlegloscP > 30);
+       {
+          Prawy_Przod();
+       }
+       
+     }
+     
+     
+   }
+   else 
+   {
+    switch (znak)
+   {
+        case 'S':
+            Stoj();
+            break;
+        case 'F':
+            Przod();
+            break;
+        case 'B':
+            Tyl();
+            break;
+        case 'L':
+            Lewo();
+            break;
+        case 'R':
+            Prawo();
+            break;
+        case 'G':
+            Lewy_Przod();
+            break;
+        case 'I':
+            Prawy_Przod();
+            break;
+        case 'H':
+            Lewy_Tyl();
+            break;
+        case 'J':
+            Prawy_Tyl();
+            break;
+        
+   }
+   }
+   
+   
+   
+   
+
+    
+
+    
+    
+ 
+   //Serial.println(input);
+ 
+ }
+
+ 
+}
